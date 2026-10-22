@@ -1,0 +1,11 @@
+{
+    "settings_title": "System Settings",
+    "api_section": "API Settings",
+    "server_url": "FastAPI Server URL:",
+    "woo_client_id": "WooCommerce Client ID:",
+    "woo_client_secret": "WooCommerce Client Secret:",
+    "interface_section": "Interface",
+    "language_label": "Application Language:",
+    "btn_save": "Save",
+    "btn_cancel": "Cancel"
+}
