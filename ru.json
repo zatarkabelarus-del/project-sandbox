@@ -1,0 +1,86 @@
+{
+  "app": {
+    "title": "AI PicChanger + SEO",
+    "subtitle": "Мультиплатформенный конвейер карточек",
+    "mode_label": "Контур"
+  },
+  "nav": {
+    "catalog": "Каталог и очереди",
+    "pilot_studio": "Студия «Пилота»",
+    "storefront_preview": "Симулятор витрины",
+    "rich_seo": "Рич-контент и SEO",
+    "settings": "Настройки и бюджет"
+  },
+  "status": {
+    "PENDING": "В очереди",
+    "DOWNLOADING": "Загрузка фото",
+    "ANALYZING": "Vision-анализ",
+    "GENERATING_BG": "Генерация сцен",
+    "PILOT_REVIEW": "Проверка Пилота",
+    "BATCH_PROCESSING": "Пакетная серия",
+    "READY_TO_PUBLISH": "Готово к выгрузке",
+    "UPLOADING": "Экспорт в CMS",
+    "SUCCESS": "Завершено",
+    "FAILED": "Ошибка задачи"
+  },
+  "channel": {
+    "CMS_API": "CMS REST API",
+    "EXCEL_CSV": "Импорт Excel / CSV",
+    "DIRECT_UPLOAD": "Прямая загрузка"
+  },
+  "catalog": {
+    "header": "Управление каталогом и очередями FSM",
+    "sync_cms": "Синхронизировать CMS",
+    "import_csv": "Импорт Excel / CSV",
+    "direct_upload": "Быстрый тест (фото)",
+    "filter_all": "Все статусы",
+    "col_sku": "Артикул",
+    "col_product": "Товар и категория",
+    "col_channel": "Канал",
+    "col_status": "Статус FSM",
+    "col_actions": "Действия",
+    "btn_open_pilot": "Открыть Пилот",
+    "btn_run_batch": "Запустить серию"
+  },
+  "pilot": {
+    "header": "Студия «Пилота» — Двухслойный редактор",
+    "approve_btn": "Утвердить дизайн эталона",
+    "approved_badge": "Эталон утвержден для серии",
+    "export_webp": "Запечь в WebP",
+    "layers_title": "Векторные слои инфографики",
+    "add_layer": "Добавить плашку",
+    "text_label": "Текст слоя",
+    "bg_color": "Цвет плашки",
+    "text_color": "Цвет текста",
+    "font_size": "Размер шрифта",
+    "slide_selector": "Слайд воронки"
+  },
+  "preview": {
+    "header": "Симулятор витрины e-commerce",
+    "mode_card": "Карточка товара",
+    "mode_grid": "Сетка категории",
+    "compare_before": "Исходное фото",
+    "compare_after": "После AI-обработки"
+  },
+  "seo": {
+    "header": "Изолированный Рич-контент и SEO-оптимизация",
+    "tab_products": "SEO и Рич-контент товаров",
+    "tab_categories": "SEO категорий",
+    "meta_title": "Meta Title",
+    "meta_desc": "Meta Description",
+    "slug": "ЧПУ (Slug)",
+    "image_alt": "Alt-атрибут главного фото",
+    "rich_html": "Изолированный HTML-блок описания",
+    "save_btn": "Сохранить изменения"
+  },
+  "settings": {
+    "header": "Конфигурация подключений и лимитов",
+    "cms_section": "Адаптер интеграции с CMS",
+    "secrets_section": "Шлюзы ИИ (Zero-Frontend Secrets)",
+    "secrets_notice": "Ключи зашифрованы на сервере по стандарту AES-256 и никогда не передаются в браузер.",
+    "budget_section": "Финансовые предохранители",
+    "daily_limit": "Дневной лимит расходов (USD)",
+    "vision_toggle": "Глубокий Vision-анализ исходников",
+    "critic_toggle": "Автоматический Critic-аудит слайдов"
+  }
+}

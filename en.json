@@ -1,0 +1,86 @@
+{
+  "app": {
+    "title": "AI PicChanger + SEO",
+    "subtitle": "Multi-Platform Product Card Pipeline",
+    "mode_label": "Environment"
+  },
+  "nav": {
+    "catalog": "Catalog & FSM Queue",
+    "pilot_studio": "Pilot Studio",
+    "storefront_preview": "Storefront Simulator",
+    "rich_seo": "Rich Content & SEO",
+    "settings": "Settings & Budget"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "DOWNLOADING": "Downloading",
+    "ANALYZING": "Vision Analysis",
+    "GENERATING_BG": "Generating Scenes",
+    "PILOT_REVIEW": "Pilot Review",
+    "BATCH_PROCESSING": "Batch Processing",
+    "READY_TO_PUBLISH": "Ready to Publish",
+    "UPLOADING": "Uploading to CMS",
+    "SUCCESS": "Success",
+    "FAILED": "Failed"
+  },
+  "channel": {
+    "CMS_API": "CMS REST API",
+    "EXCEL_CSV": "Excel / CSV Import",
+    "DIRECT_UPLOAD": "Direct Upload"
+  },
+  "catalog": {
+    "header": "Catalog & FSM Queue Management",
+    "sync_cms": "Sync CMS",
+    "import_csv": "Import Excel / CSV",
+    "direct_upload": "Quick Test (Upload)",
+    "filter_all": "All Statuses",
+    "col_sku": "SKU",
+    "col_product": "Product & Category",
+    "col_channel": "Channel",
+    "col_status": "FSM Status",
+    "col_actions": "Actions",
+    "btn_open_pilot": "Open Pilot",
+    "btn_run_batch": "Run Batch"
+  },
+  "pilot": {
+    "header": "Pilot Studio — Dual-Layer Canvas Editor",
+    "approve_btn": "Approve Master Design",
+    "approved_badge": "Master Template Approved",
+    "export_webp": "Bake to WebP",
+    "layers_title": "Vector Infographic Layers",
+    "add_layer": "Add Badge Layer",
+    "text_label": "Layer Text",
+    "bg_color": "Background Color",
+    "text_color": "Text Color",
+    "font_size": "Font Size",
+    "slide_selector": "Funnel Slide"
+  },
+  "preview": {
+    "header": "E-Commerce Storefront Simulator",
+    "mode_card": "Product Page",
+    "mode_grid": "Category Grid",
+    "compare_before": "Original Photo",
+    "compare_after": "AI Processed"
+  },
+  "seo": {
+    "header": "Isolated Rich Content & SEO Optimization",
+    "tab_products": "Product SEO & Rich Content",
+    "tab_categories": "Category SEO",
+    "meta_title": "Meta Title",
+    "meta_desc": "Meta Description",
+    "slug": "URL Slug",
+    "image_alt": "Primary Image Alt Tag",
+    "rich_html": "Isolated HTML Description Block",
+    "save_btn": "Save Changes"
+  },
+  "settings": {
+    "header": "Connections & Budget Guardrails",
+    "cms_section": "CMS Integration Adapter",
+    "secrets_section": "AI Gateways (Zero-Frontend Secrets)",
+    "secrets_notice": "API keys are encrypted at rest (AES-256) on the server and never exposed to the browser.",
+    "budget_section": "Financial Guardrails",
+    "daily_limit": "Daily Spend Limit (USD)",
+    "vision_toggle": "Deep Vision Source Analysis",
+    "critic_toggle": "Automated Critic Slide Audit"
+  }
+}
