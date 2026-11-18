@@ -1,0 +1,43 @@
+{
+  "welcome_bonus": 100,
+  "max_bonus_per_device": 1,
+  "max_bonus_per_ip_24h": 2,
+  "admin_daily_safety_limit": 5000,
+  "token_usd_rate": 0.01,
+  "blocked_email_domains": [
+    "tempmail.com",
+    "10minutemail.com",
+    "guerrillamail.com",
+    "mailinator.com",
+    "yopmail.com",
+    "trashmail.com",
+    "dispostable.com"
+  ],
+  "operations": {
+    "pilot_preview": {
+      "cost": 5,
+      "title_ru": "Генерация Пилота (5 слайдов + SEO)",
+      "title_en": "Pilot Generation (5 slides + SEO)"
+    },
+    "batch_slide": {
+      "cost": 2,
+      "title_ru": "Обработка товара в серии",
+      "title_en": "Batch Product Processing"
+    },
+    "landing_generate": {
+      "cost": 3,
+      "title_ru": "Генерация мини-лендинга товара",
+      "title_en": "Product Mini-Landing Generation"
+    },
+    "seo_category_generate": {
+      "cost": 2,
+      "title_ru": "SEO-генерация для категории",
+      "title_en": "Category SEO Generation"
+    },
+    "bg_remove_cpu": {
+      "cost": 0,
+      "title_ru": "Локальное удаление фона (CPU)",
+      "title_en": "Local Background Removal (CPU)"
+    }
+  }
+}
