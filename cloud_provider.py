@@ -1,6 +1,10 @@
 import asyncio
+import base64
 import json
+import mimetypes
 import os
+import re
+from pathlib import Path
 from typing import Any
 import httpx
 
@@ -35,8 +39,13 @@ class CloudAPIProvider(AIProviderAdapter):
         timeout: float = 45.0,
     ) -> None:
         settings = get_settings()
-        catalog_default = load_models_catalog().get("default_model", "nanobanana-flash")
-        self.gateway_url = (gateway_url or os.getenv("CLOUD_API_URL", "https://openai.com")).rstrip("/")
+        catalog_default = load_models_catalog().get("default_model", "gemini-nano-banana-2.1")
+        raw_url = (gateway_url or os.getenv("CLOUD_API_URL", "https://aiai.by")).strip().rstrip("/")
+        if raw_url in ("https://aiai.by", "http://aiai.by", "https://api.aiai.by", "http://aiai.by"):
+            raw_url = "https://aiai.by"
+        elif raw_url.endswith("api.aiai.by"):
+            raw_url = f"{raw_url}/v1"
+        self.gateway_url = raw_url
         self.vision_model = os.getenv("CLOUD_VISION_MODEL", vision_model)
         self.text_model = os.getenv("CLOUD_TEXT_MODEL", text_model)
         self.image_model = image_model or os.getenv("CLOUD_IMAGE_MODEL", catalog_default)
@@ -68,6 +77,15 @@ class CloudAPIProvider(AIProviderAdapter):
                     resp = await client.post(url, headers=self._headers(), json=payload)
                     resp.raise_for_status()
                     return resp.json()
+            except httpx.HTTPStatusError as exc:
+                body_preview = exc.response.text[:300] if exc.response is not None else ""
+                if exc.response is not None and exc.response.status_code in (400, 401, 403, 404):
+                    raise AIProviderNetworkError(
+                        f"Cloud API HTTP {exc.response.status_code} ({url}): {body_preview}"
+                    ) from exc
+                last_exc = exc
+                if attempt < len(delays):
+                    await asyncio.sleep(delays[attempt])
             except httpx.HTTPError as exc:
                 last_exc = exc
                 if attempt < len(delays):
@@ -78,10 +96,30 @@ class CloudAPIProvider(AIProviderAdapter):
     @staticmethod
     def _extract_json_content(raw_response: dict[str, Any]) -> dict[str, Any]:
         try:
-            content = raw_response["choices"][0]["message"]["content"]
+            first_choice = next(iter(raw_response["choices"]))
+            content = str(first_choice["message"]["content"]).strip()
+            content = re.sub(r"^```(?:json)?\s*", "", content, flags=re.IGNORECASE)
+            content = re.sub(r"\s*```$", "", content)
             return json.loads(content)
-        except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
+        except (KeyError, StopIteration, TypeError, json.JSONDecodeError) as exc:
             raise AIContentValidationError(f"Invalid JSON structure from Cloud API: {exc}") from exc
+
+    @staticmethod
+    def _normalize_image_input(image_url: Any) -> str:
+        if isinstance(image_url, list):
+            image_url = next(iter(image_url), "")
+        url_str = str(image_url or "").strip()
+        if not url_str or url_str.startswith(("http://", "https://", "data:image/")):
+            return url_str
+        clean_path = url_str.lstrip("/")
+        project_root = Path(__file__).resolve().parents[3]
+        candidates = [Path(url_str), Path.cwd() / clean_path, project_root / clean_path]
+        for path_obj in candidates:
+            if path_obj.is_file():
+                mime_type, _ = mimetypes.guess_type(str(path_obj))
+                b64_data = base64.b64encode(path_obj.read_bytes()).decode("ascii")
+                return f"data:{mime_type or 'image/webp'};base64,{b64_data}"
+        return url_str
 
     async def analyze_product(
         self,
@@ -113,7 +151,7 @@ class CloudAPIProvider(AIProviderAdapter):
                     "role": "user",
                     "content": [
                         {"type": "text", "text": f"Analyze product '{title}' (ID: {product_id}), lang={lang}."},
-                        {"type": "image_url", "image_url": {"url": image_url}},
+                        {"type": "image_url", "image_url": {"url": self._normalize_image_input(image_url)}},
                     ],
                 },
             ],
@@ -193,20 +231,32 @@ class CloudAPIProvider(AIProviderAdapter):
         active_model = image_model or self.image_model
         payload = {
             "model": active_model,
-            "prompt": f"Clean e-commerce {mode} background, style {style_archetype}, safe negative space outside bbox {safe_bbox}, no text.",
+            "prompt": (
+                f"Empty {mode} product photography backdrop, style {style_archetype}. "
+                f"CRITICAL: NO product, NO object, NO device, NO tools in the center; keep an empty clean surface/pedestal "
+                f"in area {safe_bbox} for later product placement, soft studio lighting, blurred background depth, strictly NO text, NO letters, NO watermarks."
+            ),
             "size": "1024x1024",
             "response_format": "b64_json",
         }
         raw = await self._post_with_retry("/images/generations", payload)
         data_list = raw.get("data") or [{}]
+        first_item = data_list[0] if isinstance(data_list, list) and data_list else {}
+        bg_b64 = str(first_item.get("b64_json", "") or "")
+        bg_url = str(first_item.get("url", "") or "")
+        if not bg_b64 and bg_url.startswith(("http://", "https://")):
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                img_resp = await client.get(bg_url)
+                if img_resp.status_code == 200:
+                    bg_b64 = base64.b64encode(img_resp.content).decode("ascii")
         return {
             "product_id": product_id,
             "style_archetype": style_archetype,
             "mode": mode,
             "image_model": active_model,
             "safe_bbox": safe_bbox,
-            "background_base64": data_list[0].get("b64_json", ""),
-            "background_url": data_list[0].get("url", ""),
+            "background_base64": bg_b64,
+            "background_url": bg_url,
         }
 
     async def validate_slide(
