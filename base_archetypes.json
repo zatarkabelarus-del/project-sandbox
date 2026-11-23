@@ -1,0 +1,86 @@
+{
+  "_description": "Базовые архетипы визуальных стилей (JSON-паспорта для двухслойного рендеринга).",
+  "styles": {
+    "minimal_light": {
+      "code": "minimal_light",
+      "archetype": "minimalism",
+      "name_i18n": {"ru": "Светлый минимализм", "en": "Clean Minimal Light"},
+      "palette": {
+        "background_base": "#F8FAFC",
+        "surface_card": "#FFFFFF",
+        "surface_alpha": 0.92,
+        "text_primary": "#0F172A",
+        "text_secondary": "#475569",
+        "accent": "#2563EB",
+        "accent_text": "#FFFFFF"
+      },
+      "typography": {
+        "heading_font": "Inter",
+        "body_font": "Inter",
+        "heading_size": 44,
+        "body_size": 24
+      },
+      "geometry": {
+        "border_radius": 16,
+        "shadow_blur": 20,
+        "shadow_color": "rgba(15, 23, 42, 0.08)",
+        "padding": 48
+      },
+      "lighting_rule": "soft_daylight_studio"
+    },
+    "studio_dark": {
+      "code": "studio_dark",
+      "archetype": "premium_dark",
+      "name_i18n": {"ru": "Премиум тёмный", "en": "Premium Studio Dark"},
+      "palette": {
+        "background_base": "#090D16",
+        "surface_card": "#1E293B",
+        "surface_alpha": 0.88,
+        "text_primary": "#F8FAFC",
+        "text_secondary": "#CBD5E1",
+        "accent": "#F59E0B",
+        "accent_text": "#090D16"
+      },
+      "typography": {
+        "heading_font": "Montserrat",
+        "body_font": "Inter",
+        "heading_size": 46,
+        "body_size": 24
+      },
+      "geometry": {
+        "border_radius": 12,
+        "shadow_blur": 28,
+        "shadow_color": "rgba(0, 0, 0, 0.45)",
+        "padding": 48
+      },
+      "lighting_rule": "dramatic_rim_light"
+    },
+    "eco_natural": {
+      "code": "eco_natural",
+      "archetype": "eco",
+      "name_i18n": {"ru": "Эко и натуральность", "en": "Eco & Natural"},
+      "palette": {
+        "background_base": "#F4F6F0",
+        "surface_card": "#FFFFFF",
+        "surface_alpha": 0.90,
+        "text_primary": "#1C2B1E",
+        "text_secondary": "#4B5E4D",
+        "accent": "#2E7D32",
+        "accent_text": "#FFFFFF"
+      },
+      "typography": {
+        "heading_font": "Manrope",
+        "body_font": "Inter",
+        "heading_size": 42,
+        "body_size": 24
+      },
+      "geometry": {
+        "border_radius": 20,
+        "shadow_blur": 16,
+        "shadow_color": "rgba(28, 43, 30, 0.08)",
+        "padding": 48
+      },
+      "lighting_rule": "warm_organic_sunlight"
+    }
+  }
+}
