@@ -268,7 +268,15 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
     try {
       const activeSourceImg = localProductImage || product.originalImageUrl;
       const normalizedImg = await toDataUrlIfBlob(activeSourceImg);
-      const existingCutout = currentSlide?.productCutoutUrl || '';
+      let existingCutout = currentSlide?.productCutoutUrl || '';
+      if (!existingCutout && normalizedImg.startsWith('data:image/')) {
+        try {
+          const cutRes = await apiClient.removeProductBackground(normalizedImg);
+          existingCutout = cutRes.cutout_data_url;
+        } catch {
+          // Фоллбэк на исходное фото при недоступности rembg
+        }
+      }
       const effectiveSku = customSku.trim() || (product.sku !== 'SKU-001' ? product.sku : 'SKU-CUSTOM');
       const res = await apiClient.runPilotPreview({
         product_id: effectiveSku,
@@ -319,12 +327,12 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
               height: Math.round(Number(box.at(3) ?? 0.13) * canvasH),
               bgColor: String(matchingRect?.fill || tLr.bg_reference || '#ffffff'),
               textColor: String(tLr.color || '#0f172a'),
-              fontSize: Math.max(15, Math.round(Number(tLr.font_size || 24) * (canvasW / 1080))),
+              fontSize: Math.max(22, Math.round(Number(tLr.font_size || 30) * (canvasW / 1080))),
               borderRadius: Number(matchingRect?.corner_radius ?? 18),
-              opacity: Number(matchingRect?.opacity ?? 0.92),
-              borderColor: String(matchingRect?.border_color || '#e2e8f0'),
-              borderWidth: Number(matchingRect?.border_width ?? 1.5),
-              shadowBlur: Number(matchingRect?.shadow_blur ?? 14),
+              opacity: Number(matchingRect?.opacity ?? 0.95),
+              borderColor: 'transparent',
+              borderWidth: 0,
+              shadowBlur: Number(matchingRect?.shadow_blur ?? 24),
             };
 
           return {
@@ -336,6 +344,7 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
             productBBox: { x: 250, y: 240, width: 300, height: 340 },
             layers: combinedLayers,
           };
+        });
 
         setSlides(mappedSlides);
         setActiveSlideIdx(0);
@@ -1024,6 +1033,9 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
                         y={fittedY}
                         width={fittedW}
                         height={fittedH}
+                        shadowColor="rgba(15, 23, 42, 0.28)"
+                        shadowBlur={24}
+                        shadowOffsetY={10}
                         draggable
                       />
                     )}
@@ -1059,13 +1071,13 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
                             width={layer.width}
                             height={layer.height}
                             fill={layer.bgColor}
-                            opacity={layer.opacity ?? 0.92}
+                            opacity={layer.opacity ?? 0.95}
                             cornerRadius={layer.borderRadius}
-                            stroke={isSelected ? '#f59e0b' : (layer.borderColor || '#e2e8f0')}
-                            strokeWidth={isSelected ? 4 : (layer.borderWidth ?? 1.5)}
-                            shadowColor="rgba(15, 23, 42, 0.16)"
-                            shadowBlur={layer.shadowBlur ?? 14}
-                            shadowOffsetY={4}
+                            stroke={isSelected ? '#f59e0b' : undefined}
+                            strokeWidth={isSelected ? 3 : 0}
+                            shadowColor="rgba(15, 23, 42, 0.20)"
+                            shadowBlur={layer.shadowBlur ?? 24}
+                            shadowOffsetY={6}
                           />
                           <Text
                             text={layer.text}
@@ -1075,10 +1087,11 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
                             fontFamily={layer.fontFamily || 'Inter'}
                             fontSize={layer.fontSize}
                             fontStyle={layer.fontStyle || 'bold'}
-                            lineHeight={layer.lineHeight || 1.2}
+                            lineHeight={layer.lineHeight || 1.15}
+                            wrap="word"
                             align="center"
                             verticalAlign="middle"
-                            padding={10}
+                            padding={12}
                           />
                         </Group>
                       );
