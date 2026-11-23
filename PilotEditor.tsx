@@ -268,15 +268,7 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
     try {
       const activeSourceImg = localProductImage || product.originalImageUrl;
       const normalizedImg = await toDataUrlIfBlob(activeSourceImg);
-      let activeCutout = currentSlide?.productCutoutUrl || '';
-      if (!activeCutout && normalizedImg.startsWith('data:image/')) {
-        try {
-          const cutRes = await apiClient.removeProductBackground(normalizedImg);
-          activeCutout = cutRes.cutout_data_url;
-        } catch {
-          // Если вырезание недоступно, используем исходное фото
-        }
-      }
+      const existingCutout = currentSlide?.productCutoutUrl || '';
       const effectiveSku = customSku.trim() || (product.sku !== 'SKU-001' ? product.sku : 'SKU-CUSTOM');
       const res = await apiClient.runPilotPreview({
         product_id: effectiveSku,
@@ -308,6 +300,7 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
           const rectLayers = rawLayers.filter((lr) => lr.type === 'rect');
           const textLayers = rawLayers.filter((lr) => lr.type === 'text');
           const bgFromApi = String(layoutObj.background_url || layoutObj.background_layer_url || '');
+          const sceneIncludesProduct = Boolean(layoutObj.scene_includes_product);
 
           const combinedLayers: CanvasLayerItem[] = textLayers.map((tLr, tIdx) => {
             const matchingRect = rectLayers.at(tIdx);
@@ -324,22 +317,25 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
               y: Math.round(Number(box.at(1) ?? 0.05) * canvasH),
               width: Math.round(Number(box.at(2) ?? 0.88) * canvasW),
               height: Math.round(Number(box.at(3) ?? 0.13) * canvasH),
-              bgColor: String(matchingRect?.fill || tLr.bg_reference || '#0f172a'),
-              textColor: String(tLr.color || '#ffffff'),
-              fontSize: Math.max(16, Math.round(Number(tLr.font_size || 28) * (canvasW / 1080))),
-              borderRadius: Number(matchingRect?.corner_radius ?? 14),
+              bgColor: String(matchingRect?.fill || tLr.bg_reference || '#ffffff'),
+              textColor: String(tLr.color || '#0f172a'),
+              fontSize: Math.max(15, Math.round(Number(tLr.font_size || 24) * (canvasW / 1080))),
+              borderRadius: Number(matchingRect?.corner_radius ?? 18),
+              opacity: Number(matchingRect?.opacity ?? 0.92),
+              borderColor: String(matchingRect?.border_color || '#e2e8f0'),
+              borderWidth: Number(matchingRect?.border_width ?? 1.5),
+              shadowBlur: Number(matchingRect?.shadow_blur ?? 14),
             };
-          });
 
           return {
             slideIndex: Number(rawSlide.slide_index || idx + 1),
             slideRole: String(rawSlide.role || `Слайд ${idx + 1}`),
             backgroundUrl: bgFromApi,
-            productCutoutUrl: activeCutout || normalizedImg,
+            productCutoutUrl: sceneIncludesProduct ? '' : (existingCutout || normalizedImg),
+            sceneIncludesProduct,
             productBBox: { x: 250, y: 240, width: 300, height: 340 },
             layers: combinedLayers,
           };
-        });
 
         setSlides(mappedSlides);
         setActiveSlideIdx(0);
@@ -456,14 +452,16 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
       if (Array.isArray(res.slides) && res.slides.length > 0) {
         const rawSlide = (res.slides.at(0) as Record<string, unknown>) || {};
         const layoutObj = (rawSlide.layout_schema as Record<string, unknown>) || {};
-        const newBg = String(layoutObj.background_layer_url || '');
+        const newBg = String(layoutObj.background_url || layoutObj.background_layer_url || '');
+        const sceneIncludesProduct = Boolean(layoutObj.scene_includes_product);
         setSlides((prev) =>
           prev.map((s, idx) =>
             idx === activeSlideIdx
               ? {
                   ...s,
                   backgroundUrl: newBg || s.backgroundUrl,
-                  productCutoutUrl: s.productCutoutUrl || normalizedImg,
+                  sceneIncludesProduct,
+                  productCutoutUrl: sceneIncludesProduct ? '' : (s.productCutoutUrl || normalizedImg),
                 }
               : s
           )
@@ -1061,9 +1059,13 @@ export const PilotEditor: React.FC<PilotEditorProps> = ({
                             width={layer.width}
                             height={layer.height}
                             fill={layer.bgColor}
+                            opacity={layer.opacity ?? 0.92}
                             cornerRadius={layer.borderRadius}
-                            stroke={isSelected ? '#f59e0b' : undefined}
-                            strokeWidth={isSelected ? 4 : 0}
+                            stroke={isSelected ? '#f59e0b' : (layer.borderColor || '#e2e8f0')}
+                            strokeWidth={isSelected ? 4 : (layer.borderWidth ?? 1.5)}
+                            shadowColor="rgba(15, 23, 42, 0.16)"
+                            shadowBlur={layer.shadowBlur ?? 14}
+                            shadowOffsetY={4}
                           />
                           <Text
                             text={layer.text}
